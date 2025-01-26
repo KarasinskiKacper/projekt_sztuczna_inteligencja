@@ -7,6 +7,7 @@ from wykrywanie_tekstu.split_img import split_img
 
 from test_model import test_model
 from model_kacper_k import model_kacper_k
+from model_mikolaj_c import model_mikolaj_c
 from model_pawel_h import model_pawel_h
 
 split_img_model = load_net()
@@ -34,6 +35,13 @@ def home():
                 print(res_text)
             elif request.form["model"] == "2":
                 res_text += model_pawel_h(img) + ' '
+                print(res_text)
+            elif request.form["model"] == "3":
+                pass
+                # res_text += model_mikolaj_c(img) + ' '
+                # print(res_text)
+            elif request.form["model"] == "4":
+                res_text += model_mikolaj_c(img) + ' '
                 print(res_text)
                 
         

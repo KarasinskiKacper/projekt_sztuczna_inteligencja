@@ -7,138 +7,54 @@ import torch.nn.functional as F
 
 
 def model_pawel_h(img):
-    # class ReEnhancedOCRNet(nn.Module):
-    #     def __init__(self, num_chars):
-    #         super().__init__()
-    #         self.leakyReLU = nn.LeakyReLU(0.1)
-    #         self.dropout = nn.Dropout(0.3)
-
-    #         # Smaller Initial Feature Extraction
-    #         self.init_conv = nn.Sequential(
-    #             nn.Conv2d(1, 8, 3, stride=1, padding=1),  # Reduced from 16 to 8 channels
-    #             nn.BatchNorm2d(8),
-    #             self.leakyReLU
-    #         )
-            
-    #         # Simplified Downsampling Blocks with adjusted input channels
-    #         self.block1 = self._make_res_block(8, 16, stride=(2,1))    # H=16
-    #         self.block2 = self._make_res_block(16, 32, stride=(2,1))   # H=8
-    #         self.block3 = self._make_res_block(32, 64, stride=(2,2))   # H=4
-            
-    #         # Final processing
-    #         self.final_conv = nn.Sequential(
-    #             nn.Conv2d(64, 64, (1,3), stride=1, padding=(0,1)),
-    #             nn.BatchNorm2d(64),
-    #             self.leakyReLU,
-    #         )
-
-    #         # Reduced Sequence Modeling with GRU
-    #         self.gru = nn.GRU(64, 64, bidirectional=True, num_layers=1, batch_first=True)  # GRU instead of LSTM
-    #         self.attention = nn.MultiheadAttention(128, 4, dropout=0.3)  # Fewer attention heads
-    #         self.classifier = nn.Linear(128, num_chars + 1)  # Adjusted input size
-
-    #     def _make_res_block(self, in_ch, out_ch, stride):
-    #         return nn.Sequential(
-    #             ResSepConv(in_ch, out_ch, stride)
-    #         )
-
-    #     def forward(self, x):
-    #         # Feature extraction
-    #         x = self.init_conv(x)        # (B,8,32,256)
-    #         x = self.block1(x)           # (B,16,16,256)
-    #         x = self.block2(x)           # (B,32,8,256)
-    #         x = self.block3(x)           # (B,64,4,128)
-            
-    #         # Final processing
-    #         x = self.final_conv(x)       # (B,64,3,128)
-    #         x = x.mean(dim=2)            # (B,64,128)
-    #         x = x.permute(0,2,1)         # (B,128,64)
-            
-    #         # Sequence modeling with GRU
-    #         x, _ = self.gru(x)           # (B,128,128) - GRU output
-    #         x = x.permute(1,0,2)         # (128,B,128)
-    #         x, _ = self.attention(x,x,x) # (128,B,128)
-    #         x = x.permute(1,0,2)         # (B,128,128)
-            
-    #         # Classification
-    #         x = self.classifier(x)       # (B,128,num_chars+1)
-    #         return F.log_softmax(x, 2)
-
-    # class ResSepConv(nn.Module):
-    #     def __init__(self, in_ch, out_ch, stride):
-    #         super().__init__()
-    #         self.leakyReLU = nn.LeakyReLU(0.1)
-            
-    #         self.conv = nn.Sequential(
-    #             nn.Conv2d(in_ch, in_ch, 3, stride, 1, groups=in_ch),
-    #             nn.Conv2d(in_ch, out_ch, 1),
-    #             nn.BatchNorm2d(out_ch)
-    #         )
-            
-    #         self.shortcut = nn.Sequential()
-    #         if stride != 1 or in_ch != out_ch:
-    #             self.shortcut = nn.Sequential(
-    #                 nn.Conv2d(in_ch, out_ch, 1, stride),
-    #                 nn.BatchNorm2d(out_ch)
-    #             )
-
-    #     def forward(self, x):
-    #         return self.leakyReLU(self.conv(x) + self.shortcut(x))
     class ReEnhancedOCRNet(nn.Module):
         def __init__(self, num_chars):
             super().__init__()
             self.leakyReLU = nn.LeakyReLU(0.1)
-            self.dropout = nn.Dropout(0.2)  # Reduced dropout
+            self.dropout = nn.Dropout(0.2)  
 
-            # Smaller Initial Feature Extraction
             self.init_conv = nn.Sequential(
-                nn.Conv2d(1, 16, 3, stride=1, padding=1),  # Reduced channels
+                nn.Conv2d(1, 16, 3, stride=1, padding=1),  
                 nn.BatchNorm2d(16),
                 self.leakyReLU
             )
             
-            # Simplified Downsampling Blocks
-            self.block1 = self._make_res_block(16, 16, stride=(2,1))   # H=16
-            self.block2 = self._make_res_block(16, 32, stride=(2,1))   # H=8
-            self.block3 = self._make_res_block(32, 64, stride=(2,2))   # H=4 (removed 1 block)
+            self.block1 = self._make_res_block(16, 16, stride=(2,1))
+            self.block2 = self._make_res_block(16, 32, stride=(2,1))
+            self.block3 = self._make_res_block(32, 64, stride=(2,2))
             
-            # Final processing
             self.final_conv = nn.Sequential(
-                nn.Conv2d(64, 64, (1,3), stride=1, padding=(0,1)),  # Smaller kernel
+                nn.Conv2d(64, 64, (1,3), stride=1, padding=(0,1)),
                 nn.BatchNorm2d(64),
                 self.leakyReLU,
             )
 
             # Reduced Sequence Modeling
-            self.lstm = nn.LSTM(64, 128, bidirectional=True, num_layers=2, batch_first=True)  # Fewer layers/units
-            self.attention = nn.MultiheadAttention(256, 4, dropout=0.2)  # Fewer heads
+            self.lstm = nn.LSTM(64, 128, bidirectional=True, num_layers=2, batch_first=True)  
+            self.attention = nn.MultiheadAttention(256, 4, dropout=0.2)  
             self.classifier = nn.Linear(256, num_chars + 1)
 
         def _make_res_block(self, in_ch, out_ch, stride):
-            return nn.Sequential(  # Single ResSepConv per block
+            return nn.Sequential( 
                 ResSepConv(in_ch, out_ch, stride)
             )
 
         def forward(self, x):
-            # Feature extraction
-            x = self.init_conv(x)        # (B,16,32,256)
-            x = self.block1(x)           # (B,16,16,256)
-            x = self.block2(x)           # (B,32,8,256)
-            x = self.block3(x)           # (B,64,4,128)
+            x = self.init_conv(x)       
+            x = self.block1(x)          
+            x = self.block2(x)          
+            x = self.block3(x)          
             
-            # Final processing
-            x = self.final_conv(x)       # (B,64,3,128)
-            x = x.mean(dim=2)            # (B,64,128) - Adaptive pooling
-            x = x.permute(0,2,1)         # (B,128,64)
+            x = self.final_conv(x)       
+            x = x.mean(dim=2)            
+            x = x.permute(0,2,1)         
             
-            # Sequence modeling
-            x, _ = self.lstm(x)          # (B,128,256)
-            x = x.permute(1,0,2)         # (128,B,256)
-            x, _ = self.attention(x,x,x) # (128,B,256)
-            x = x.permute(1,0,2)         # (B,128,256)
+            x, _ = self.lstm(x)         
+            x = x.permute(1,0,2)        
+            x, _ = self.attention(x,x,x)
+            x = x.permute(1,0,2)        
             
-            # Classification
-            x = self.classifier(x)       # (B,128,num_chars+1)
+            x = self.classifier(x)     
             return F.log_softmax(x, 2)
 
     class ResSepConv(nn.Module):
@@ -184,7 +100,7 @@ def model_pawel_h(img):
 
     input_tensor = preprocess_image(img)
  
-    model_data = torch.load('./models/pawel_h/best.pth', map_location=torch.device('cpu'), weights_only=False)
+    model_data = torch.load('./models/pawel_h/checkpoint13.pth', map_location=torch.device('cpu'), weights_only=False)
     model = ReEnhancedOCRNet(num_chars=len(model_data['config']['char_list']))
     model.load_state_dict(model_data['state_dict'])
     model.eval() 
