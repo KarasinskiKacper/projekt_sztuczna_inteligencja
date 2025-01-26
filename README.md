@@ -21,16 +21,19 @@ W projekcie został wykorzystany gotowy model służący do znajdywania położe
 - Biblioteki wymienione w `./generate_db/requirements.txt`<br>
 
 <h2>Uruchomienie aplikacji webowej</h2>
+
 ```
 git clone https://github.com/KarasinskiKacper/projekt_sztuczna_inteligencja.git [nazwa folderu]
 cd [nazwa folderu]
 pip install -r requirements.txt
 python main.py
 ```
+
 serwer aplikacji webowej wystartuje pod adresem http://127.0.0.1:5000
 
 <h2>Uruchomienie skryptu do generowania bazy danych</h2>
 <b>Zainstalować pythona 3.8</b>
+
 ```
 git clone https://github.com/KarasinskiKacper/projekt_sztuczna_inteligencja.git [nazwa folderu]
 cd [nazwa folderu]
@@ -38,4 +41,5 @@ cd generate_db
 pip install -r requirements.txt
 python generate_data.py
 ```
+
 <b>Uwaga baza danych zajmuje 64GB!</b>
