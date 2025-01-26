@@ -28,10 +28,10 @@ python main.py<br>
 serwer aplikacji webowej wystartuje pod adresem http://127.0.0.1:5000<br>
 
 <h2>Uruchomienie skryptu do generowania bazy danych</h2>
-***Zainstalować pythona 3.8***<br>
+<b>Zainstalować pythona 3.8</b><br>
 git clone https://github.com/KarasinskiKacper/projekt_sztuczna_inteligencja.git [nazwa folderu]<br>
 cd [nazwa folderu]<br>
 cd generate_db<br>
 pip install -r requirements.txt<br>
 python generate_data.py<br>
-***Uwaga baza danych zajmuje 64GB!***<br>
+<b>Uwaga baza danych zajmuje 64GB!</b><br>
