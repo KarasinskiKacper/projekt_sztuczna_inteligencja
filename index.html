@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projekt</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename= 'style.css') }}"
+    />
+  </head>
+  <body>
+    <main>
+      <h1>Rozpoznywanie obrazów</h1>
+      <div class="input_wrap">
+        <form id="myForm">
+          <input type="file" name="image" id="image" />
+          <label
+            ><input type="radio" name="model" value="1" />Model Kacper K</label
+          >
+          <label
+            ><input type="radio" name="model" value="2" />Model Paweł H</label
+          >
+          <label
+            ><input type="radio" name="model" value="3" />Model Paweł D</label
+          >
+          <label
+            ><input type="radio" name="model" value="4" />Model Mikołaj C</label
+          >
+          <input type="submit" value="Wyślij" />
+        </form>
+      </div>
+      <img id="preview" src="" alt="" />
+      <script type="text/javascript">
+        const fileInput = document.getElementById("image");
+        const preview = document.getElementById("preview");
+
+        fileInput.addEventListener("change", () => {
+          const file = fileInput.files[0];
+          const reader = new FileReader();
+
+          reader.onload = () => {
+            preview.src = reader.result;
+          };
+
+          reader.readAsDataURL(file);
+        });
+      </script>
+      <p id="res"></p>
+      <script type="text/javascript">
+        const res_p = document.getElementById("res");
+        document
+          .getElementById("myForm")
+          .addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const form = document.getElementById("myForm");
+
+            const formData = new FormData(form);
+            const response = await fetch("http://127.0.0.1:5000", {
+              method: "POST",
+              body: formData,
+            });
+            console.log(response);
+            res_p.innerHTML = await response.text();
+          });
+
+        //const model = document.querySelector("input[name=model]:checked");
+        //const image = document.getElementById("image");
+        //window.post = function (url, data) {
+        //  console.log(model);
+        //  if (model[0].checked) {
+        //    console.log("1");
+        //  }
+        //  return fetch(url, {
+        //    method: "POST",
+        //    headers: { "Content-Type": "application/json" },
+        //    body: JSON.stringify(data),
+        //  });
+        //};
+        //
+        //post("http://127.0.0.1:5000/", { model: model, image: image });
+      </script>
+    </main>
+  </body>
+</html>

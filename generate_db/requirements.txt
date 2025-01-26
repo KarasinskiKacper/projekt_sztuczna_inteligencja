@@ -1,0 +1,8 @@
+numpy==1.21.5
+opencv-python==4.5.5.64
+pillow==9.5.0
+imgaug
+tenacity
+loguru
+tqdm
+lmdb

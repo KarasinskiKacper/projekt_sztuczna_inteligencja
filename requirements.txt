@@ -1,0 +1,7 @@
+torch==2.5.1+cu124
+torchvision==0.20.1+cu124
+scikit-image==0.25.0
+scipy==1.15.1
+opencv-python==4.11.0.86
+Flask==3.1.0
+pillow==10.3.0

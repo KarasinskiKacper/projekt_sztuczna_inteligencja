@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 48px;
+}
+
+img {
+  display: block;
+  margin: 0 auto;
+  width: 50%;
+}
+
+.input_wrap {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+input,
+button {
+  font-size: 24px;
+}
+
+html {
+  background-color: #999;
+}
+#res {
+  width: 600px;
+  text-align: center;
+  margin: 10px auto;
+}
