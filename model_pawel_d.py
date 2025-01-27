@@ -1,4 +1,5 @@
 from PIL import Image
+import math
 
 import torch
 import torch.nn as nn
@@ -45,6 +46,20 @@ def model_pawel_d(img):
         def forward(self, x):
             return self.conv(x) + self.shortcut(x)
 
+    class PositionalEncoding(nn.Module):
+        def __init__(self, d_model: int, max_len: int = 5000):
+            super().__init__()
+            position = torch.arange(max_len).unsqueeze(1)
+            div_term = torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
+            pe = torch.zeros(1, max_len, d_model)
+            pe[0, :, 0::2] = torch.sin(position * div_term)
+            pe[0, :, 1::2] = torch.cos(position * div_term)
+            self.register_buffer('pe', pe)
+
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            x = x + self.pe[:, :x.size(1)]
+            return x
+
     class OCRModel(nn.Module):
         def __init__(self, num_chars):
             super().__init__()
@@ -73,7 +88,9 @@ def model_pawel_d(img):
                 nn.Dropout(0.3)
             )
 
+            self.pos_encoder = PositionalEncoding(512)
             self.ln = nn.LayerNorm(512)
+            
             encoder_layer = nn.TransformerEncoderLayer(
                 d_model=512, nhead=8, dim_feedforward=2048,
                 dropout=0.3, activation='gelu', batch_first=True
@@ -126,10 +143,10 @@ def model_pawel_d(img):
             
             x = self.final_conv(x)              # (B,512,1,64)
             x = x.squeeze(2).permute(0,2,1)     # (B,64,512)
+            x = self.pos_encoder(x)             
             x = self.ln(x)
             
             x = self.transformer(x)             # (B,64,512)
-            
             x = self.classifier(x)              # (B,64,num_chars+1)
             return F.log_softmax(x, dim=2)
 
@@ -155,7 +172,7 @@ def model_pawel_d(img):
 
     input_tensor = preprocess_image(img)
  
-    model_data = torch.load('./models/pawel_d/state.pth', map_location=torch.device('cpu'), weights_only=False)
+    model_data = torch.load('./models/pawel_d/state_last.pth', map_location=torch.device('cpu'), weights_only=False)
     
     model = OCRModel(num_chars=len(model_data['char_list']))
     model.load_state_dict(model_data['state_dict'])
