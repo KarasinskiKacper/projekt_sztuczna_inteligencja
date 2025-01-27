@@ -5,7 +5,6 @@ import os
 from wykrywanie_tekstu.load_net import load_net
 from wykrywanie_tekstu.split_img import split_img
 
-from test_model import test_model
 from model_kacper_k import model_kacper_k
 from model_mikolaj_c import model_mikolaj_c
 from model_pawel_h import model_pawel_h
@@ -13,10 +12,8 @@ from model_pawel_d import model_pawel_d
 
 split_img_model = load_net()
 
-# Get the directory of the current script
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Create the Flask app and specify the template folder
 app = Flask(__name__, template_folder = current_dir)
 
 @app.route('/', methods=['GET',"POST"])
@@ -38,7 +35,6 @@ def home():
                 res_text += model_pawel_h(img) + ' '
                 print(res_text)
             elif request.form["model"] == "3":
-                pass
                 res_text += model_pawel_d(img) + ' '
                 print(res_text)
             elif request.form["model"] == "4":
@@ -47,7 +43,6 @@ def home():
                 
         
         response = make_response(res_text)
-        # response = make_response(res_text)
         response.headers['Content-Type'] = 'text/plain'
         response.headers['Access-Control-Allow-Origin'] = '*'
         

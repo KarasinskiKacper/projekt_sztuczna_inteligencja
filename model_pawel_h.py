@@ -29,7 +29,6 @@ def model_pawel_h(img):
                 self.leakyReLU,
             )
 
-            # Reduced Sequence Modeling
             self.lstm = nn.LSTM(64, 128, bidirectional=True, num_layers=2, batch_first=True)  
             self.attention = nn.MultiheadAttention(256, 4, dropout=0.2)  
             self.classifier = nn.Linear(256, num_chars + 1)
