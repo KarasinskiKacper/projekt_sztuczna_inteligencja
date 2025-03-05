@@ -60,9 +60,25 @@ def split_img(
     image = np.array(image)
 
     bboxes, polys, score_text = test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, refine_net)
+    sorted_polys = np.zeros_like(polys)
+    i = 0
+    while i < len(polys):
+        start_i = i
+        tmp_polys = []
+        current_min_y = polys[i][0][1] 
+        current_half_line_hight = (polys[i][2][1] - current_min_y) / 4
+        tmp_polys.append(polys[i])
+        i += 1
+        while i < len(polys) and polys[i][0][1] - current_half_line_hight < current_min_y < polys[i][2][1] + current_half_line_hight:
+            tmp_polys.append(polys[i])
+            i += 1
+        tmp_polys = sorted(tmp_polys, key=lambda x: x[0][0])
+        sorted_polys[start_i:i] = tmp_polys
+        
+    
 
     images = []
-    for poly in polys:
+    for poly in sorted_polys:
         min_x = int(poly[0][0])
         max_x = int(poly[2][0])
         min_y = int(poly[0][1])
